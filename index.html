@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 3-Tier App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My 3-Tier App!</h1>
+        <p>Click the buttons below to interact with the backend API:</p>
+        <button id="getButton">Get Items</button>
+        <button id="postButton">Add Item</button>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const apiUrl = '***';
+
+        document.getElementById('getButton').addEventListener('click', async function() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = 'Calling API...';
+    
+            try {
+                const response = await fetch(`${apiUrl}/backend`, {
+                    method: 'GET',
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    responseDiv.innerHTML = `<strong>Response from backend:</strong> ${JSON.stringify(data)}`;
+                } else {
+                    const errorBody = await response.text();
+                    console.error('API response error:', response.status, response.statusText, errorBody);
+                    responseDiv.innerHTML = `Error: ${response.status} - ${response.statusText} - ${errorBody}`;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                responseDiv.innerHTML = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('postButton').addEventListener('click', async function() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = 'Adding item...';
+
+            const newItem = {
+                message: prompt("Enter message for the new item:") 
+            };
+
+            if (!newItem.message) {
+                responseDiv.innerHTML = 'Error: Message must be provided.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/backend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newItem)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    responseDiv.innerHTML = `<strong>Response from backend:</strong> ${JSON.stringify(data)}`;
+                } else {
+                    const errorBody = await response.text();
+                    console.error('API response error:', response.status, response.statusText, errorBody);
+                    responseDiv.innerHTML = `Error: ${response.status} - ${response.statusText} - ${errorBody}`;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                responseDiv.innerHTML = `Error: ${error.message}`;
+            }
+        });
+    </script>    
+</body>
+</html>
